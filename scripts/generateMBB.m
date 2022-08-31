@@ -13,8 +13,8 @@ bcbot = @(x, y) abs(x - width) < 1e-6;
 F.addBoundaryCondition(bcbot, [1, 2], 0);
 
 % Load
-loadw = width*padding(0);
-loadh = height*padding(1);
+loadw = width*padding(1);
+loadh = height*padding(2);
 bcload = @(x, y) logical((x < loadw + 1e-6).*...
     (height - y < loadh + 1e-6));
 F.addBoundaryCondition(bcload, 2, 1);
