@@ -1,22 +1,23 @@
 %% Make mesh
-dimensions = [6000e-3 1000e-3];
+dimensions = [8000e-3 1000e-3];
 q = dimensions(1)/dimensions(2);
 yresolutions = [10 20 30 40 50 75];
 xresolutions = ceil(yresolutions*q);
 resolutions = [xresolutions; yresolutions];
 versions = {'a'};
+folder = 'Projects/CAEigen/processed_data/meshes/do/8x1/';
 for i = 1:numel(versions)
     for k = 1:size(resolutions, 2)
-        generateMesh(resolutions(:, k), dimensions, versions{i})
+        generateMesh(folder, resolutions(:, k), dimensions, versions{i})
     end
 end
 
 
-function generateMesh(resolution, dimensions, beam_case)
-w = dimensions(1);
-h = dimensions(2);
+function generateMesh(folder, res, dim, beam_case)
+w = dim(1);
+h = dim(2);
 
-F = StructureFactory(resolution, dimensions);
+F = StructureFactory(res, dim);
 switch beam_case
     case 'a'
         ytol_left = 1e-6;
@@ -58,7 +59,7 @@ end
 fpos = @(x, y) logical((abs(x - w/2) < 1e-6).*(abs(y - h) < 1e-6));
 F.addPrescribedForce(fpos, 2, -1);
 
-format = sprintf('beamFull%s%ix%i.mat', beam_case, resolution(:));
-geomfile = ['Data/Meshes/DuOlhoff/', format];
+file = sprintf('beamFull%s%ix%i.mat', beam_case, res(:));
+geomfile = fullfile(folder, file);
 F.make(4, geomfile);
 end

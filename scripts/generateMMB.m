@@ -1,5 +1,5 @@
 %% Make mesh
-dimensions = [6000e-3 1000e-3];
+dimensions = [8 1];
 q = dimensions(1)/dimensions(2);
 yresolutions = [10 20 30 40 50 75];
 xresolutions = ceil(yresolutions*q);

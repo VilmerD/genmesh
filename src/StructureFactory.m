@@ -82,11 +82,16 @@ classdef StructureFactory < handle
                 ndof = newdofs(end);
             end
             
+            % Boundary nodes (used for PDE filter for example)
+            bnodes = [];
+            bnodes = [bnodes; find(coord(:, 1) == 0)];
+            bnodes = [bnodes; find(coord(:, 1) == obj.width)];
+            bnodes = [bnodes; find(coord(:, 2) == 0)];
+            bnodes = [bnodes; find(coord(:, 2) == obj.height)];
+            
             % Save file
-            width = obj.width;
-            height = obj.height;
             save(filename, 'F', 'bc', 'edof', 'edofs', 'nelm', 'ndof', 'ex', ...
-                'ey', 'enod', 'width', 'height')
+                'ey', 'enod', 'bnodes')
         end
         
         function addBoundaryCondition(obj, func, coords, val)
