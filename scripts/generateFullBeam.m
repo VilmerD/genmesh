@@ -1,19 +1,31 @@
 %% Make mesh
-dimensions = [8000e-3 1000e-3];
+% Dimentions in meters
+dimensions = [8 1];
 q = dimensions(1)/dimensions(2);
+
+% Resolutions (making sure square elements)
 yresolutions = [10 20 30 40 50 75];
 xresolutions = ceil(yresolutions*q);
 resolutions = [xresolutions; yresolutions];
+
+% Version of the beam
 versions = {'a'};
-folder = 'Projects/CAEigen/processed_data/meshes/do/8x1/';
+
+% Folder to save meshes in
+folder = 'Projects/EfficientCA/processed_data/meshes/';
+
+% Naming format
+nameform = 'DO%s_%04ix%04i.mat';
 for i = 1:numel(versions)
-    for k = 1:size(resolutions, 2)
-        generateMesh(folder, resolutions(:, k), dimensions, versions{i})
-    end
+for k = 1:size(resolutions, 2)
+    name = sprintf(nameform, versions{i}, resolutions(:, k));
+    namefull = fullfile(folder, name);
+    generateMesh(namefull, resolutions(:, k), dimensions, versions{i})
+end
 end
 
 
-function generateMesh(folder, res, dim, beam_case)
+function generateMesh(file, res, dim, beam_case)
 w = dim(1);
 h = dim(2);
 
@@ -50,16 +62,13 @@ switch beam_case
         F.addBoundaryCondition(bc2, [1, 2], 0);
         F.addBoundaryCondition(bc1, [1, 2], 0);
         
-    otherwise
-        errorStruct.message = sprintf('Invalid case: "%s"', beam_case);
-        error(errorStruct);
 end
 
 % Prescribed force
 fpos = @(x, y) logical((abs(x - w/2) < 1e-6).*(abs(y - h) < 1e-6));
 F.addPrescribedForce(fpos, 2, -1);
 
-file = sprintf('beamFull%s%ix%i.mat', beam_case, res(:));
-geomfile = fullfile(folder, file);
-F.make(4, geomfile);
+% Nodes to except f
+
+F.make(4, file);
 end

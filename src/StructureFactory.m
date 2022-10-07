@@ -29,8 +29,9 @@ classdef StructureFactory < handle
             ndof = max(edof(:));
             
             % Basic data
-            xcoord = coord(:, 1)*obj.width;
-            ycoord = coord(:, 2)*obj.height;
+            coord = coord.*[obj.width obj.height];
+            xcoord = coord(:, 1);
+            ycoord = coord(:, 2);
             ex = ex*obj.width;
             ey = ey*obj.height;
             
@@ -43,6 +44,13 @@ classdef StructureFactory < handle
                 dofsi = reshape(dof(vertsi, obj.bcf{i, 2}), [], 1);
                 bc = [bc; dofsi obj.bcf{i, 3}*ones(numel(dofsi), 1)];
             end
+            
+            % Boundary nodes (used for PDE filter for example)
+            bnodes = [];
+            bnodes = [bnodes; find(coord(:, 1) == 0)];
+            bnodes = [bnodes; find(coord(:, 1) == obj.width)];
+            bnodes = [bnodes; find(coord(:, 2) == 0)];
+            bnodes = [bnodes; find(coord(:, 2) == obj.height)];
             
             % Add prescribed forces
             F = zeros(ndof, 1);
@@ -82,16 +90,9 @@ classdef StructureFactory < handle
                 ndof = newdofs(end);
             end
             
-            % Boundary nodes (used for PDE filter for example)
-            bnodes = [];
-            bnodes = [bnodes; find(coord(:, 1) == 0)];
-            bnodes = [bnodes; find(coord(:, 1) == obj.width)];
-            bnodes = [bnodes; find(coord(:, 2) == 0)];
-            bnodes = [bnodes; find(coord(:, 2) == obj.height)];
-            
             % Save file
-            save(filename, 'F', 'bc', 'edof', 'edofs', 'nelm', 'ndof', 'ex', ...
-                'ey', 'enod', 'bnodes')
+            save(filename, 'F', 'bc', 'edof', 'dof', 'edofs', 'nelm', 'ndof', 'ex', ...
+                'ey', 'coord', 'enod', 'bnodes')
         end
         
         function addBoundaryCondition(obj, func, coords, val)
