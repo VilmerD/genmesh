@@ -46,11 +46,7 @@ classdef StructureFactory < handle
             end
             
             % Boundary nodes (used for PDE filter for example)
-            bnodes = [];
-            bnodes = [bnodes; find(coord(:, 1) == 0)];
-            bnodes = [bnodes; find(coord(:, 1) == obj.width)];
-            bnodes = [bnodes; find(coord(:, 2) == 0)];
-            bnodes = [bnodes; find(coord(:, 2) == obj.height)];
+
             
             % Add prescribed forces
             F = zeros(ndof, 1);
